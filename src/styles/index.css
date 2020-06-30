@@ -47,10 +47,6 @@ input {
   margin-bottom: 0.2em;
 }
 
-.flex {
-  margin-left: 25em;
-}
-
 .error-input {
   border: 2px solid red;
   border-radius: 4px;
