@@ -2,6 +2,7 @@ import React from "react";
 
 import useFormValidation from "./useFormValidation";
 import validateLogin from "./validateLogin";
+import firebase from "../../firebase";
 
 const INITIAL_STATE = {
   name: "",
@@ -17,8 +18,22 @@ const Login = props => {
     values,
     errors,
     isSubmitting
-  } = useFormValidation(INITIAL_STATE, validateLogin);
+  } = useFormValidation(INITIAL_STATE, validateLogin, authenticateUser);
   const [login, setLogin] = React.useState(true);
+  const [firebaseError, setFirebaseError] = React.useState(null);
+
+  async function authenticateUser() {
+    const { name, email, password } = values;
+    try {
+      const response = login
+        ? await firebase.login(email, password)
+        : await firebase.register(name, email, password);
+      console.log({ response });
+    } catch (err) {
+      console.error("Authentication Error ", err);
+      setFirebaseError(err.message)
+    }
+  }
 
   return (
     <div>
@@ -56,9 +71,13 @@ const Login = props => {
           placeholder="Choose a secure password"
         />
         {errors.password && <p className="error-text">{errors.password}</p>}
+        {!!firebaseError && <p className="error-text">{firebaseError}</p>}
         <div className="flex mt3">
-          <button type="submit" className="button pointer mr2" disabled={isSubmitting}
-          style={{background: isSubmitting ? 'grey' : 'orange'}}
+          <button
+            type="submit"
+            className="button pointer mr2"
+            disabled={isSubmitting}
+            style={{ background: isSubmitting ? "grey" : "orange" }}
           >
             Submit
           </button>
