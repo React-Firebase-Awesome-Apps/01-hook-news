@@ -5,6 +5,7 @@ import LinkItem from "../Link/LinkItem";
 
 function LinkList(props) {
   const [links, setLinks] = React.useState([]);
+  const isNewPage = props.location.pathname.includes("new");
 
   React.useEffect(() => {
     const unsub = getLinks();
@@ -14,7 +15,11 @@ function LinkList(props) {
 
   function getLinks() {
     // we could use .get, but .onSnapshot gets the latest updates...
-    return firebase.db.collection("links").onSnapshot(handleSnashot);
+    // .orderBy('created', 'desc') = 1st the fild we want to order, 2nd the way i.e. descending...
+    return firebase.db
+      .collection("links")
+      .orderBy("created", "desc")
+      .onSnapshot(handleSnashot);
   }
 
   function handleSnashot(snapshot) {
@@ -26,9 +31,19 @@ function LinkList(props) {
     return links;
   }
 
+  function renderLinks() {
+    if (isNewPage) {
+      return links;
+    }
+    const topLinks = links
+      .slice()
+      .sort((l1, l2) => l2.votes.length - l1.votes.length);
+    return topLinks;
+  }
+
   return (
     <div>
-      {links.map((link, index) => (
+      {renderLinks().map((link, index) => (
         <LinkItem
           key={link.id}
           showCount={true}
