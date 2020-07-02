@@ -141,6 +141,7 @@ textarea {
   font-size: 11px;
   color: #828282;
   margin-left: 0.25rem;
+  cursor: pointer;
 }
 
 .forgot-password {
