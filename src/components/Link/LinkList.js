@@ -7,12 +7,14 @@ function LinkList(props) {
   const [links, setLinks] = React.useState([]);
 
   React.useEffect(() => {
-    getLinks();
+    const unsub = getLinks();
+
+    return () => unsub();
   }, []);
 
   function getLinks() {
-    // we could use .get, but .onSnapshot get the latest updates...
-    firebase.db.collection("links").onSnapshot(handleSnashot);
+    // we could use .get, but .onSnapshot gets the latest updates...
+    return firebase.db.collection("links").onSnapshot(handleSnashot);
   }
 
   function handleSnashot(snapshot) {
@@ -21,6 +23,7 @@ function LinkList(props) {
     });
     setLinks(links);
     console.log({ links });
+    return links;
   }
 
   return (
