@@ -1,9 +1,22 @@
 import React from "react";
-import useAuth from "../Auth/useAuth";
+import firebase from "../../firebase";
 
 function LinkList(props) {
-  const user = useAuth();
-  console.log("LinkList user", {user} );
+  React.useEffect(() => {
+    getLinks();
+  }, []);
+
+  function getLinks() {
+    firebase.db.collection("links").onSnapshot(handleSnashot);
+  }
+
+  function handleSnashot(snapshot) {
+    const links = snapshot.docs.map(doc => {
+      return { id: doc.id, ...doc.data() };
+    });
+    console.log({ links });
+  }
+
   return <div>LinkList</div>;
 }
 

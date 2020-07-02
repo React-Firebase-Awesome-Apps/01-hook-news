@@ -1,9 +1,10 @@
 import React from "react";
 
-import FirebaseContext from "../../firebase/context";
+import firebase from '../../firebase'
+// import FirebaseContext from "../../firebase/context";
 
 function ForgotPassword() {
-  const { firebase } = React.useContext(FirebaseContext);
+  // const { firebase } = React.useContext(FirebaseContext);
   const [resetPasswordEmail, setResetPasswordEmail] = React.useState("");
   const [isPasswordReset, setPasswordReset] = React.useState(false);
   const [passwordResetError, setPasswordResetError] = React.useState(null);
