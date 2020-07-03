@@ -2,6 +2,12 @@ Udemy Course:
 ### [Awesome Apps with React Hooks and Firebase](https://www.udemy.com/course/awesome-apps-with-react-hooks-and-firebase/)
 
 
+* [Project account in Firebase] (https://console.firebase.google.com/u/0/project/hooks-news-app-d9481/database)
+
+
+* [Project hosted in Firebase](https://hooks-news-app-d9481.web.app/new/1)
+
+
 - customHooks (session 3)
 - add firebase to your web app (session 4, 10)
 
