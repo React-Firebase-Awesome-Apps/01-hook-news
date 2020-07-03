@@ -14,7 +14,8 @@ function LinkList(props) {
   }, []);
 
   function getLinks() {
-    // we could use .get, but .onSnapshot gets the latest updates...
+    // we could use .get, but .onSnapshot gets the latest updates, by setting a listener
+    // just like .onAuthChangeState()
     // .orderBy('created', 'desc') = 1st the fild we want to order, 2nd the way i.e. descending...
     return firebase.db
       .collection("links")
