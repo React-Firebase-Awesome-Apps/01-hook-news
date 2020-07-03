@@ -37,7 +37,7 @@ function SearchLinks() {
     setFilteredLinks(matchedLinks);
   }
   return (
-    <di>
+    <div>
       <form onSubmit={handleSearch}>
         <div>
           Search <input onChange={event => setFilter(event.target.value)} />
@@ -52,7 +52,7 @@ function SearchLinks() {
           index={index}
         />
       ))}
-    </di>
+    </div>
   );
 }
 
