@@ -1,5 +1,6 @@
 import React from "react";
-import { bounce } from "react-animations";
+import axios from "axios";
+import { fadeIn } from "react-animations";
 import styled, { keyframes } from "styled-components";
 // import posed from 'react-pose'
 
@@ -13,15 +14,14 @@ import { LINKS_PER_PAGE } from "../../utils/index";
 //   visible: { opacity: 1 }
 // });
 
-const bounceAnimation = keyframes`${bounce}`;
+const fadeInAnimation = keyframes`${fadeIn}`;
 
 const BouncyDiv = styled.div`
-  animation: 1s ${bounceAnimation};
+  animation: 1s ${fadeInAnimation};
 `;
 
 function LinkList(props) {
   const [links, setLinks] = React.useState([]);
-  const [isIndexVisible, setIsIndexVisible] = React.useState(true);
   // cursor base pagination
   const [cursor, setCursor] = React.useState(null);
   const page = Number(props.match.params.page);
@@ -62,14 +62,22 @@ function LinkList(props) {
         .limit(LINKS_PER_PAGE)
         .onSnapshot(handleSnapshot);
     } else {
-      return (
-        firebase.db
-          .collection("links")
-          .orderBy("created", "desc")
-          // .startAfter(cursor.created)
-          // .limit(LINKS_PER_PAGE)
-          .onSnapshot(handleSnapshot)
-      );
+      // In case of page 2 reload (watch lecture 28):
+      // On reload, we get the offset and we send it to firebase
+      // by executing a cloud function. From there we get the links and
+      // the last link and we set them accordingly.
+      const offset = page * LINKS_PER_PAGE - LINKS_PER_PAGE;
+      axios
+        .get(
+          `https://us-central1-hooks-news-app-d9481.cloudfunctions.net/linksPagination?offset=${offset}`
+        )
+        .then(response => {
+          const links = response.data;
+          const lastLink = links[links.length - 1];
+          setLinks(links);
+          setCursor(lastLink);
+        });
+      return () => {};
     }
   }
 
@@ -95,19 +103,14 @@ function LinkList(props) {
   // }
 
   function visitPreviousPage() {
-    setIsIndexVisible(false);
     if (page > 1) {
       props.history.push(`/new/${page - 1}`);
     }
-    setIsIndexVisible(true);
   }
   function visitNextPage() {
-    setIsIndexVisible(false);
-
     if (page <= links.length / LINKS_PER_PAGE) {
       props.history.push(`/new/${page + 1}`);
     }
-    setIsIndexVisible(true);
   }
 
   const pageIndex = page ? (page - 1) * LINKS_PER_PAGE + 1 : 0;
