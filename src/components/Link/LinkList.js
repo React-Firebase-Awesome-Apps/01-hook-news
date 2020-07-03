@@ -22,11 +22,13 @@ const BouncyDiv = styled.div`
 
 function LinkList(props) {
   const [links, setLinks] = React.useState([]);
+  const [loading, setLoading] = React.useState([]);
   // cursor base pagination
   const [cursor, setCursor] = React.useState(null);
   const page = Number(props.match.params.page);
   const isNewPage = props.location.pathname.includes("new");
   const isTopPage = props.location.pathname.includes("top");
+  const liknsRef = firebase.db.collection("links");
 
   React.useEffect(() => {
     const unsub = getLinks();
@@ -34,20 +36,19 @@ function LinkList(props) {
   }, [isTopPage, page]);
 
   function getLinks() {
+    setLoading(true)
     // we could use .get, but .onSnapshot gets the latest updates, by setting a listener
     // just like .onAuthChangeState()
     // .orderBy('created', 'desc') = 1st the fild we want to order, 2nd the way i.e. descending...
     const hasCursor = Boolean(cursor);
     if (isTopPage) {
-      return firebase.db
-        .collection("links")
+      return liknsRef
         .orderBy("voteCount", "desc")
         .limit(LINKS_PER_PAGE)
         .onSnapshot(handleSnapshot);
     } else if (page === 1) {
       return (
-        firebase.db
-          .collection("links")
+        liknsRef
           .orderBy("created", "desc")
           // .startAfter(1593682527937)
           // .startAt(1593682527937)
@@ -55,8 +56,7 @@ function LinkList(props) {
           .onSnapshot(handleSnapshot)
       );
     } else if (hasCursor) {
-      return firebase.db
-        .collection("links")
+      return liknsRef
         .orderBy("created", "desc")
         .startAfter(cursor.created)
         .limit(LINKS_PER_PAGE)
@@ -76,6 +76,7 @@ function LinkList(props) {
           const lastLink = links[links.length - 1];
           setLinks(links);
           setCursor(lastLink);
+          setLoading(false)
         });
       return () => {};
     }
@@ -88,8 +89,9 @@ function LinkList(props) {
     setLinks(links);
     const lastLink = links[links.length - 1];
     setCursor(lastLink);
+    setLoading(false)
     console.log({ links });
-    return links;
+    // return links;
   }
 
   // function renderLinks() {
@@ -116,7 +118,7 @@ function LinkList(props) {
   const pageIndex = page ? (page - 1) * LINKS_PER_PAGE + 1 : 0;
 
   return (
-    <div>
+    <div style={{opacity: loading ? 0.25 : 1}}>
       {links.map((link, index) => (
         <BouncyDiv>
           <LinkItem
